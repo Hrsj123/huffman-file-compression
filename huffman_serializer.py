@@ -114,7 +114,7 @@ class HuffTree:
         return temp3
     
     def get_bytes_dict(self) -> bytes:
-        return json.dumps(self._encoded_char_dict).encode("utf-8")
+        return json.dumps({v: k for k, v in self._encoded_char_dict.items()}).encode("utf-8")
     
     def _encoder(self, root, seq=""):
         if root is not None:
@@ -133,8 +133,8 @@ class HuffTree:
         self._encoder(self.root())
         return self._encoded_char_dict
 
-    def decoder(self, data: bitarray, d=None) -> str: 
-        rev_dict = {v: k for k, v in (d or self._encoded_char_dict).items()}
+    @classmethod
+    def decoder(cls, data: bitarray, d: dict) -> str:
         decoded_chars = []
         key = ""
 
@@ -142,12 +142,11 @@ class HuffTree:
 
         for char in data_str:
             key += char
-            if key in rev_dict:
-                decoded_chars.append(rev_dict[key])
+            if key in d:
+                decoded_chars.append(d[key])
                 key = ""
         
         if key:
             raise Exception("Failed to decode data......")
-        
 
         return "".join(decoded_chars)
