@@ -30,7 +30,7 @@ class HuffmanFileSerializer:
 
         # Step 6: Calculate extra padding bits for byte alignment
         extra_bits = (8 - len(encoded_bits) % 8) % 8
-        bytes_extra_bits = f'{extra_bits:08b}'.encode("utf-8")
+        bytes_extra_bits = extra_bits.to_bytes(1, byteorder="big")
 
         # Step 7: Add padding bits and convert to bytes
         bytes_padding = list("0" * extra_bits)
@@ -52,7 +52,6 @@ class HuffmanFileSerializer:
 
         # Step 1: Locate separator and split
         bytes_sep = self.SEPARATOR
-        # bytes_sep.frombytes(self.SEPARATOR)
 
         sep_index = file_bytes.find(bytes_sep)
         if sep_index == -1:
@@ -64,9 +63,9 @@ class HuffmanFileSerializer:
 
         # Step 2: Extract extra bits count & remove padded bits
         decoded_bits_list = []
-        for byte in remaining_bits[8:]:
+        for byte in remaining_bits[1:]:
             decoded_bits_list.extend(list(format(byte, '08b')))
-        extra_bits = int(remaining_bits[:8], 2)
+        extra_bits = int.from_bytes(remaining_bits[:1])
         decoded_bits_list = decoded_bits_list[extra_bits:]
 
         # Step 3: Decode header
