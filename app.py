@@ -1,6 +1,6 @@
-from file_bytes_io import EncodedFile
+from file_bytes_io import HuffmanFileSerializer
 
-obj = EncodedFile("file.txt")
+obj = HuffmanFileSerializer("file.txt")
 
 file_name = "./test.txt"
 
@@ -14,7 +14,10 @@ def file_reader():
             else:
                 yield char
 
+# Encode
 text = "".join([i for i in file_reader()])
 obj.encode_and_write(text)
+
+# Decode
 decoded_text = obj.decode_from_file()
 print(text == decoded_text)

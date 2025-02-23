@@ -2,7 +2,7 @@ import json
 from bitarray import bitarray
 from huffman_serializer import HuffTree
 
-class EncodedFile:
+class HuffmanFileSerializer:
     SEPARATOR = "---SEP---".encode("utf-8")  # Unique separator
 
     def __init__(self, filename):
