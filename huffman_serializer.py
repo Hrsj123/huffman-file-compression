@@ -2,7 +2,6 @@ from abc import ABC, abstractmethod
 from functools import total_ordering
 import heapq
 from typing import List, Union, Dict
-from bitarray import bitarray
 import json
 
 class HuffBaseNode(ABC):
@@ -134,13 +133,11 @@ class HuffTree:
         return self._encoded_char_dict
 
     @classmethod
-    def decoder(cls, data: bitarray, d: dict) -> str:
+    def decoder(cls, data: List[str], d: dict) -> str:
         decoded_chars = []
         key = ""
 
-        data_str = data.to01()
-
-        for char in data_str:
+        for char in data:
             key += char
             if key in d:
                 decoded_chars.append(d[key])

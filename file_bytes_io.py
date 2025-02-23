@@ -1,5 +1,4 @@
 import json
-from bitarray import bitarray
 from huffman_serializer import HuffTree
 
 class HuffmanFileSerializer:
@@ -19,62 +18,61 @@ class HuffmanFileSerializer:
         encoding_dict = root.encoder()
 
         # Step 3: Convert header (dictionary) to bytes
-        bytes_header = bitarray()
-        header_json = root.get_bytes_dict()
-        bytes_header.frombytes(header_json)
+        bytes_header = root.get_bytes_dict()        # bytes
 
         # Step 4: Convert separator to bytes
-        bytes_sep = bitarray()
-        bytes_sep.frombytes(self.SEPARATOR)
+        bytes_sep = self.SEPARATOR                  # bytes
 
         # Step 5: Encode the text into bits
-        encoded_bits = bitarray()
+        encoded_bits = []
         for char in text:
-            encoded_bits.extend(encoding_dict[char])
+            encoded_bits.extend(list(encoding_dict[char]))
 
         # Step 6: Calculate extra padding bits for byte alignment
         extra_bits = (8 - len(encoded_bits) % 8) % 8
-        bytes_extra_bits = bitarray()
-        bytes_extra_bits.frombytes(extra_bits.to_bytes(1, byteorder="big"))
+        bytes_extra_bits = f'{extra_bits:08b}'.encode("utf-8")
 
         # Step 7: Add padding bits and convert to bytes
-        bytes_padding = bitarray("0" * extra_bits)
-        bytes_encoded_str = bitarray()
-        bytes_encoded_str.frombytes(bytes_padding + encoded_bits)
+        bytes_padding = list("0" * extra_bits)
+        padded_encoded_list = [*bytes_padding, *encoded_bits]
+        padded_bytes_encoded_str = bytes(int("".join(padded_encoded_list[i:i+8]), 2) for i in range(0, len(padded_encoded_list), 8))
 
         # Step 8: Write everything to a binary file
         with open(self.filename, "wb") as file:
-            file_data = bytes_header + bytes_sep + bytes_extra_bits + bytes_encoded_str
-            file_data.tofile(file)
+            file_data = bytes_header + bytes_sep + bytes_extra_bits + padded_bytes_encoded_str
+            file.write(file_data)
 
         print(f"Encoded data written to {self.filename}")
 
     def decode_from_file(self):
         """Reads the binary file, extracts encoded data, and decodes it back to a string."""
+        file_bytes = None
         with open(self.filename, "rb") as file:
-            bits_read = bitarray()
-            bits_read.fromfile(file)
+            file_bytes = file.read()
 
         # Step 1: Locate separator and split
-        bytes_sep = bitarray()
-        bytes_sep.frombytes(self.SEPARATOR)
+        bytes_sep = self.SEPARATOR
+        # bytes_sep.frombytes(self.SEPARATOR)
 
-        sep_index = bits_read.find(bytes_sep)
+        sep_index = file_bytes.find(bytes_sep)
         if sep_index == -1:
             raise ValueError("Separator not found in the file!")
 
         # Split header and encoded data
-        header_bits = bits_read[:sep_index]
-        remaining_bits = bits_read[sep_index + len(bytes_sep):]
+        header_bits = file_bytes[:sep_index]
+        remaining_bits = file_bytes[sep_index + len(bytes_sep):]
 
-        # Step 2: Extract extra bits count
-        extra_bits = int.from_bytes(remaining_bits[:8].tobytes(), "big")
-        decoded_bits = remaining_bits[8 + extra_bits:]  # Remove padding bits
+        # Step 2: Extract extra bits count & remove padded bits
+        decoded_bits_list = []
+        for byte in remaining_bits[8:]:
+            decoded_bits_list.extend(list(format(byte, '08b')))
+        extra_bits = int(remaining_bits[:8], 2)
+        decoded_bits_list = decoded_bits_list[extra_bits:]
 
         # Step 3: Decode header
-        parsed_data = json.loads(header_bits.tobytes().decode("utf-8"))
+        parsed_data = json.loads(header_bits.decode("utf-8"))
 
         # Step 4: Decode Huffman-encoded content
-        decoded_text = HuffTree.decoder(decoded_bits, d=parsed_data)
+        decoded_text = HuffTree.decoder(decoded_bits_list, d=parsed_data)
 
         return decoded_text
