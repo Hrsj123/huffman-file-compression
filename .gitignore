@@ -1,4 +1,6 @@
-venv
+huffman_compression.egg-info/
+venv/
+
 file.*
 test.txt
 __pycache__

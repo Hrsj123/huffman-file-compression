@@ -1,8 +1,9 @@
+import heapq
+import json
+
 from abc import ABC, abstractmethod
 from functools import total_ordering
-import heapq
 from typing import List, Union, Dict
-import json
 
 class HuffBaseNode(ABC):
     @abstractmethod
