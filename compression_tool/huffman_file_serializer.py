@@ -53,7 +53,6 @@ class HuffmanFileSerializer:
     def decode_from_file(cls, filename: str=None) -> str:
         """Reads the binary file, extracts encoded data, and decodes it back to a string."""
         file_bytes = None
-
         with open(filename, "rb") as file:
             file_bytes = file.read()
 
