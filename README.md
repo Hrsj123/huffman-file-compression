@@ -1,6 +1,6 @@
 # Huffman File Compression
 
-A CLI tool to compress and decompress files using Huffman Compression.
+A CLI tool and Python package to compress and decompress files using Huffman Compression.
 
 ## Installation
 
@@ -22,9 +22,11 @@ $ pip install -e .
 
 ## Usage
 
-The CLI tool provides two main functionalities:
+The tool provides two main ways to use Huffman compression: as a **CLI tool** and as a **Python package**.
 
-### Compress a File
+### CLI Usage
+
+#### Compress a File
 
 To compress a file using Huffman encoding:
 
@@ -34,7 +36,7 @@ huffman-compress <file_path>
 
 This creates a new compressed file in the same directory.
 
-### Decompress a File
+#### Decompress a File
 
 To decompress a previously compressed file:
 
@@ -43,6 +45,37 @@ huffman-compress -u <file_path>
 ```
 
 This restores the original file from the compressed version.
+
+#### Specify Destination File (Optional Parameter)
+
+To specify a destination file for compression:
+
+```sh
+huffman-compress -d <dest_file> <src_file>
+```
+
+To specify a destination file for decompression:
+
+```sh
+huffman-compress -ud <dest_file> <src_file>
+```
+
+### Using as a Python Package
+
+You can also use Huffman compression programmatically in Python.
+
+```python
+from compression_tool import HuffmanFileSerializer
+
+# Initialize with source file
+obj = HuffmanFileSerializer("./test/test.txt")
+
+# Compress file
+obj.compress_file("./test/test-compressed.txt")
+
+# Decompress file
+data = HuffmanFileSerializer.decode_compress_file("./test/test-compressed.txt")
+```
 
 ## How It Works
 
@@ -54,3 +87,4 @@ This restores the original file from the compressed version.
 
 - **Python Version**: 3.11.9
 - No external dependencies
+
