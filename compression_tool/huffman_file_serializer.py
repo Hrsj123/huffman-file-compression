@@ -86,7 +86,10 @@ class HuffmanFileSerializer:
         decoded_bits_list = decoded_bits_list[extra_bits:]
 
         # Decode header
-        parsed_data = json.loads(header_bits.decode("utf-8"))
+        try:
+            parsed_data = json.loads(header_bits.decode("utf-8"))
+        except ValueError:
+            raise ValueError("Unable to parse the Json Header.")
 
         # Decode Huffman-encoded content
         decoded_text = HuffTree.decoder(decoded_bits_list, d=parsed_data)
