@@ -23,9 +23,12 @@ def cli_argument_parser() -> str:
     )
 
     parser.add_argument(FILEPATH, help="The path where the file exists")
+    parser.add_argument("-d", "--destination-folder", help="Set destination folder.")
     parser.add_argument("-u", "--uncompress", action="store_true", help="Deserialize encoded file.")
     args = parser.parse_args()
 
     file_path = vars(args)[FILEPATH]
+    uncompress = vars(args)["uncompress"]
+    destination_folder = vars(args)["destination_folder"]
     
-    return (file_path, args.uncompress)
+    return (file_path, uncompress, destination_folder)

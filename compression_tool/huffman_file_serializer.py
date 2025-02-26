@@ -1,6 +1,7 @@
 import json
 
 from .huffman_tree import HuffTree
+from .utils import file_reader
 
 class HuffmanFileSerializer:
     SEPARATOR = "---SEP---".encode("utf-8")  # Unique separator
@@ -11,6 +12,10 @@ class HuffmanFileSerializer:
             if len(sep) <= 1:
                 raise ValueError("Length of sep has to be greater than 1.")
             self.SEPARATOR = sep.encode("utf-8")
+    
+    def from_file(self, src_filename=None):
+        text = "".join([i for i in file_reader(file_name=src_filename)])
+        self.encode_and_write(text)
 
     def encode_and_write(self, text):
         """Encodes text using Huffman encoding and writes it to a binary file."""

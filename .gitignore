@@ -5,3 +5,4 @@ file.*
 test.txt
 __pycache__
 test.py
+package-test.py
